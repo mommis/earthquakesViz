@@ -1,3 +1,5 @@
+// Mohammed EL KHAIRA & Michaël VALBON
+
 // *** On lit le dataset earthquake de l'USGS et on transforme les données en features
 d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson", function(earthquakeData) {
     createFeatures(earthquakeData.features);
