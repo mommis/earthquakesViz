@@ -47,72 +47,76 @@ function createFeatures(earthquakeData) {
         onEachFeature: function(feature, layer){
             var url = "http://dbpedia.org/sparql";
             var query = [
-                "PREFIX dbo: <http://dbpedia.org/ontology/>",
-                "SELECT DISTINCT ?label ?capital ?flag ?wiki",
-                "WHERE {",
+             "PREFIX dbo: <http://dbpedia.org/ontology/>",
+             "SELECT DISTINCT ?label ?capital ?flag ?leader ?wiki",
+             "WHERE {",
                 "?country a dbo:Country.",
                 "?country rdfs:label ?label.",
                 "OPTIONAL { ?country dbo:capital ?capital. }",
                 "OPTIONAL { ?country dbo:thumbnail ?flag. }",
+                "OPTIONAL { ?country dbo:leader ?leader. }",
                 "OPTIONAL { ?country foaf:isPrimaryTopicOf ?wiki. }",
                 "FILTER NOT EXISTS { ?country dbo:dissolutionYear ?yearEnd }.",
                 "FILTER langMatches(lang(?label), 'en').",
-                "}"
+             "}"
             ].join(" ");
 
             // var query = [
             //  "PREFIX dbo: <http://dbpedia.org/ontology/>",
-            //  "SELECT DISTINCT ?label ?capital ?flag ?populationTotal ?areaTotal ?governmentType ?leader ?wiki",
+            //  "SELECT DISTINCT ?label ?capital ?flag ?governmentType ?leader ?governmentType ?leader ?wiki",
             //  "WHERE {",
             //     "?country a dbo:Country.",
             //     "?country rdfs:label ?label.",
-            //     "OPTIONAL { ?country dbo:capital ?capital. }",
-            //     "OPTIONAL { ?country dbo:thumbnail ?flag. }",
-            //     "OPTIONAL { ?country dbo:populationTotal ?populationTotal. }",
-            //     "OPTIONAL { ?country dbo:areaTotal ?areaTotal. }",
-            //     "OPTIONAL { ?country dbo:governmentType ?governmentType. }",
-            //     "OPTIONAL { ?country dbo:leader ?leader. }",
-            //     "OPTIONAL { ?country foaf:isPrimaryTopicOf ?wiki. }",
-            //     "FILTER NOT EXISTS { ?country dbo:dissolutionYear ?yearEnd }.",
+            //     "?country dbo:capital ?capital.",
+            //     "?country dbo:thumbnail ?flag.",
+            //     "?country dbo:governmentType ?governmentType.",
+            //     "?country dbo:leader ?leader.",
+            //     "?country dbo:governmentType ?governmentType.",
+            //     "?country dbo:leader ?leader.",
+            //     "?country foaf:isPrimaryTopicOf ?wiki.",
+            //     "FILTER NOT EXISTS { ?country dbo:dissolutionYear ?yearEnd.",
             //     "FILTER langMatches(lang(?label), 'en').",
             //  "}"
             // ].join(" ");
 
             var queryUrl = url+"?query="+ encodeURIComponent(query) +"&format=json";
 
-            // Affichage des popups de description des lieux
+            // Affichage des govups de description des lieux
             $.ajax({
                 dataType: "json",
                 url: queryUrl,
                 success: function(data) {
                     let results = data.results.bindings;
 
-                    var cap; var flag; var com; var pop; var area; var wiki;
+                    var country; var cap; var flag; var gov; var leader; var wiki;
                     for (var i in results) {
-                        var sparql_capital = results[i].label.value;
+                        country = results[i].label.value;
                         // Si le lieu récupéré via la requete SPARQL correspond au lieu sur la carte
-                        if(sparql_capital === getPays(feature.properties.place))
+                        if(country === getPays(feature.properties.place))
                         {
                             flag = results[i].flag.value;
                             wiki = results[i].wiki.value;
-                            // pop = results[i].populationTotal.value;
-                            // area = results[i].areaTotal.value;
+                            leader = results[i].leader.value.replace("http://dbpedia.org/resource/", "");
                             cap = results[i].capital.value.replace("http://dbpedia.org/resource/", "");
                             break;
                         }
-                        else {
-                            cap = "USA";
+                        // Cas des USA à part car getPays(feature.properties.place) renvoie le nom de l'état plutôt que celui du pays
+                        else if(country === "United States") {
+                            flag = results[i].flag.value;
+                            wiki = results[i].wiki.value;
+                            leader = results[i].leader.value.replace("http://dbpedia.org/resource/", "");
+                            cap = results[i].capital.value.replace("http://dbpedia.org/resource/", "");
                         }
                     }
 
-                    layer.bindPopup("<h3 > Magnitude : "+ feature.properties.mag +
+                    layer.bindPopup("<h3> Magnitude : "+ feature.properties.mag +
                     "</h3><h3>Location : " + feature.properties.place +
+                    "</h3><h3><img src='" + flag + "' alt='flag' width='75' height='50' />"+
+                    "</h3><h3>Country : " + country +
                     "</h3><h3>Capital : " + cap +
-                    // "</h3><h3>populationTotale : " + pop +
-                    // "</h3><h3>superficie : " + area +
-                    "</h3><h3><a href='"+wiki+"'>" + wiki + "</a>" +
-                    "<h3><img src='" + flag + "' alt='flag' width='75' height='50' /></h3>"+
-                    "</h3><hr><h3>" + new Date(feature.properties.time) + "</h3>" );
+                    "</h3><h3>VIP : " + leader +
+                    "</h3><h3><a href='"+ wiki +"'>" + wiki + "</a>" +
+                    "</h3><hr /><h3>" + new Date(feature.properties.time) + "</h3>" );
                 }
             });
 
@@ -146,7 +150,7 @@ function createFeatures(earthquakeData) {
         // Création de la carte (centrée sur la France)
         var myMap = L.map("map-id", {
             center: [48.866667, 2.333333],
-            zoom: 3,
+            zoom: 2,
             layers: [outdoorsmap, earthquakes]
         });
 
