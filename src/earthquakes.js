@@ -74,10 +74,11 @@ function createFeatures(earthquakeData) {
 
                     var country; var cap; var flag; var gov; var leader; var wiki;
                     for (var i in results) {
-                        country = results[i].label.value;
+                        var sparql_country = results[i].label.value;
                         // Si le lieu récupéré via la requete SPARQL correspond au lieu sur la carte
-                        if(country === getPays(feature.properties.place))
+                        if(sparql_country === getPays(feature.properties.place))
                         {
+                            country = results[i].label.value;
                             flag = results[i].flag.value;
                             wiki = results[i].wiki.value;
                             leader = results[i].leader.value.replace("http://dbpedia.org/resource/", "");
@@ -85,7 +86,8 @@ function createFeatures(earthquakeData) {
                             break;
                         }
                         // Cas des USA à part car getPays(feature.properties.place) renvoie le nom de l'état plutôt que celui du pays
-                        else if(country === "United States") {
+                        else if(sparql_country === "United States") {
+                            country = results[i].label.value;
                             flag = results[i].flag.value;
                             wiki = results[i].wiki.value;
                             leader = results[i].leader.value.replace("http://dbpedia.org/resource/", "");
