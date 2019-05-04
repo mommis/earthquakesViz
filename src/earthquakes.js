@@ -48,14 +48,12 @@ function createFeatures(earthquakeData) {
             var url = "http://dbpedia.org/sparql";
             var query = [
                 "PREFIX dbo: <http://dbpedia.org/ontology/>",
-                "SELECT DISTINCT ?label ?capital ?flag ?populationTotal ?areaTotal ?wiki",
+                "SELECT DISTINCT ?label ?capital ?flag ?wiki",
                 "WHERE {",
                 "?country a dbo:Country.",
                 "?country rdfs:label ?label.",
                 "OPTIONAL { ?country dbo:capital ?capital. }",
                 "OPTIONAL { ?country dbo:thumbnail ?flag. }",
-                "OPTIONAL { ?country dbo:populationTotal ?populationTotal. }",
-                "OPTIONAL { ?country dbo:areaTotal ?areaTotal. }",
                 "OPTIONAL { ?country foaf:isPrimaryTopicOf ?wiki. }",
                 "FILTER NOT EXISTS { ?country dbo:dissolutionYear ?yearEnd }.",
                 "FILTER langMatches(lang(?label), 'en').",
@@ -97,8 +95,8 @@ function createFeatures(earthquakeData) {
                         {
                             flag = results[i].flag.value;
                             wiki = results[i].wiki.value;
-                            pop = results[i].populationTotal.value;
-                            area = results[i].areaTotal.value;
+                            // pop = results[i].populationTotal.value;
+                            // area = results[i].areaTotal.value;
                             cap = results[i].capital.value.replace("http://dbpedia.org/resource/", "");
                             break;
                         }
@@ -108,12 +106,12 @@ function createFeatures(earthquakeData) {
                     }
 
                     layer.bindPopup("<h3 > Magnitude : "+ feature.properties.mag +
-                    "</h3><h3>Lieu : " + feature.properties.place +
-                    "</h3><h3>Capitale : " + cap +
-                    "</h3><h3>populationTotale : " + pop +
-                    "</h3><h3>superficie : " + area +
+                    "</h3><h3>Location : " + feature.properties.place +
+                    "</h3><h3>Capital : " + cap +
+                    // "</h3><h3>populationTotale : " + pop +
+                    // "</h3><h3>superficie : " + area +
                     "</h3><h3><a href='"+wiki+"'>" + wiki + "</a>" +
-                    "<img src='" + flag + "' />"+
+                    "<h3><img src='" + flag + "' alt='flag' width='75' height='50' /></h3>"+
                     "</h3><hr><h3>" + new Date(feature.properties.time) + "</h3>" );
                 }
             });
