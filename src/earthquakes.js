@@ -61,24 +61,6 @@ function createFeatures(earthquakeData) {
              "}"
             ].join(" ");
 
-            // var query = [
-            //  "PREFIX dbo: <http://dbpedia.org/ontology/>",
-            //  "SELECT DISTINCT ?label ?capital ?flag ?governmentType ?leader ?governmentType ?leader ?wiki",
-            //  "WHERE {",
-            //     "?country a dbo:Country.",
-            //     "?country rdfs:label ?label.",
-            //     "?country dbo:capital ?capital.",
-            //     "?country dbo:thumbnail ?flag.",
-            //     "?country dbo:governmentType ?governmentType.",
-            //     "?country dbo:leader ?leader.",
-            //     "?country dbo:governmentType ?governmentType.",
-            //     "?country dbo:leader ?leader.",
-            //     "?country foaf:isPrimaryTopicOf ?wiki.",
-            //     "FILTER NOT EXISTS { ?country dbo:dissolutionYear ?yearEnd.",
-            //     "FILTER langMatches(lang(?label), 'en').",
-            //  "}"
-            // ].join(" ");
-
             var queryUrl = url+"?query="+ encodeURIComponent(query) +"&format=json";
 
             // Affichage des govups de description des lieux
@@ -130,28 +112,28 @@ function createFeatures(earthquakeData) {
                     fillColor: 'tomato',
                     fillOpacity: .8
                 })
-            }
-        });
+        }
+    });
 
-        // Création de la carte avec tous les points
-        createMap(earthquakes);
-    };
-
-
-    // *** Fonction permettant la création de la carte
-    function createMap(earthquakes) {
-
-        // Chargement de la carte mapbox.run-bike-hike qui sera affichée en fond
-        let mapboxUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}';
-        let accessToken = 'pk.eyJ1IjoiY2FwMDE1NzAwIiwiYSI6ImNqZng1ZjBhbjQxMWozM21kZzkzNW1kdjAifQ.VdaKJu8FPaDob9yWS4kTSw';
-        let outdoorsmap = L.tileLayer(mapboxUrl, {id: 'mapbox.run-bike-hike', maxZoom: 20, accessToken: accessToken});
+    // Création de la carte avec tous les points
+    createMap(earthquakes);
+};
 
 
-        // Création de la carte (centrée sur la France)
-        var myMap = L.map("map-id", {
-            center: [48.866667, 2.333333],
-            zoom: 2,
-            layers: [outdoorsmap, earthquakes]
-        });
+// *** Fonction permettant la création de la carte
+function createMap(earthquakes) {
 
-    }
+    // Chargement de la carte mapbox.run-bike-hike qui sera affichée en fond
+    let mapboxUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}';
+    let accessToken = 'pk.eyJ1IjoiY2FwMDE1NzAwIiwiYSI6ImNqZng1ZjBhbjQxMWozM21kZzkzNW1kdjAifQ.VdaKJu8FPaDob9yWS4kTSw';
+    let outdoorsmap = L.tileLayer(mapboxUrl, {id: 'mapbox.run-bike-hike', maxZoom: 20, accessToken: accessToken});
+
+
+    // Création de la carte (centrée sur la France)
+    var myMap = L.map("map-id", {
+        center: [48.866667, 2.333333],
+        zoom: 2,
+        layers: [outdoorsmap, earthquakes]
+    });
+
+}
